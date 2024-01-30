@@ -1,0 +1,50 @@
+version: "3.9"
+
+volumes:
+  postgres_volume:
+
+services:
+  fastapi:
+    image: nextgenman/ars_project
+    restart: always
+    ports:
+      - "8000:8000"
+    networks:
+      - api_bd
+    environment:
+      - DATABASE_URL=postgresql://nextgenman:12345678@database:5432/postgres_db
+    depends_on:
+      - database
+      - rabbitmq
+
+
+  database:
+    image: postgres
+    restart: always
+    volumes:
+      - postgres_volume:/data/db
+    environment:
+      POSTGRES_USER: nextgenman
+      POSTGRES_PASSWORD: 12345678
+      POSTGRES_DB: postgres_db
+    ports:
+      - "5432:5432"
+    networks:
+      - api_bd
+
+  rabbitmq:
+    image: rabbitmq:management
+    hostname: rabbitmq
+    restart: always
+    ports:
+      - 5672:5672
+      - 15672:15672
+    networks:
+      - api_bd
+    environment:
+      RABBITMQ_DEFAULT_USER: ars_rabbit
+      RABBITMQ_DEFAULT_PASS: ars_rabbit
+
+networks:
+  api_bd:
+    driver: bridge

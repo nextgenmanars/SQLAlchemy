@@ -1,11 +1,15 @@
 from fastapi import FastAPI
-from database import Base, engine
-from models import user, shop
 from pydantic import BaseModel
+from database import Base, engine
+from sqlalchemy import MetaData
+import user, shop, category, product
 
+metadata = MetaData()
 app = FastAPI()
 
+
 Base.metadata.create_all(bind=engine)
+
 
 class Status(BaseModel):
     status: str = "ok"
