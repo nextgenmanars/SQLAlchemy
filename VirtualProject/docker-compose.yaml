@@ -1,0 +1,36 @@
+version: "3.9"
+
+volumes:
+  postgres_volume:
+
+services:
+  fastapi:
+    image: ars_project:latest
+    restart: always
+    ports:
+      - "8000:8000"
+    networks:
+      - api_bd
+    environment:
+      - DATABASE_URL=postgresql://nextgenman:12345678@database:5432/postgres_db
+    depends_on:
+      - database
+
+
+  database:
+    image: postgres:latest
+    restart: always
+    volumes:
+      - postgres_volume:/data/db
+    environment:
+      POSTGRES_USER: nextgenman
+      POSTGRES_PASSWORD: 12345678
+      POSTGRES_DB: postgres_db
+    ports:
+      - "5432:5432"
+    networks:
+      - api_bd
+
+networks:
+  api_bd:
+    driver: bridge
